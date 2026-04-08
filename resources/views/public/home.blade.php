@@ -16,12 +16,11 @@
                     </a>
                 </div>
 
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div class="ml-auto flex flex-col gap-3 sm:flex-row sm:items-center">
                     <nav class="flex flex-wrap gap-2">
                         <a class="nav-link nav-link--active" href="{{ route('portal.index') }}">Portal</a>
                         <a class="nav-link" href="#cidades">Cidades</a>
                         <a class="nav-link" href="#governanca">Governança</a>
-                        <a class="nav-link" href="{{ route('admin.dashboard') }}">Painel</a>
                     </nav>
 
                     <div class="flex items-center gap-2">
@@ -38,7 +37,7 @@
                                 <button class="button button-muted" type="submit">Sair</button>
                             </form>
                         @else
-                            <a class="button button-primary" href="{{ route('login') }}">Entrar</a>
+                            <a class="button button-primary" href="{{ route('login') }}">Acesso</a>
                         @endauth
                     </div>
                 </div>
@@ -84,7 +83,9 @@
 
                 <div class="mt-8 flex flex-wrap gap-3">
                     <a class="button button-primary" href="#cidades">Explorar igrejas</a>
-                    <a class="button button-muted" href="{{ route('admin.dashboard') }}">Abrir painel administrativo</a>
+                    @auth
+                        <a class="button button-muted" href="{{ route('admin.dashboard') }}">Abrir painel administrativo</a>
+                    @endauth
                 </div>
             </article>
 

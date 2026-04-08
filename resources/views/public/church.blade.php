@@ -24,7 +24,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="ml-auto flex items-center gap-2">
                     <button class="theme-toggle" type="button" data-theme-toggle>
                         <span class="theme-toggle__orb" aria-hidden="true"></span>
                         <span data-theme-label>Tema claro</span>
@@ -34,7 +34,7 @@
                     @auth
                         <a class="button button-primary" href="{{ route('admin.dashboard') }}">Painel</a>
                     @else
-                        <a class="button button-primary" href="{{ route('login') }}">Acesso seguro</a>
+                        <a class="button button-primary" href="{{ route('login') }}">Acesso</a>
                     @endauth
                 </div>
             </div>
@@ -104,8 +104,9 @@
                 </div>
 
                 <div class="mt-6 flex flex-wrap gap-2">
-                    <a class="button button-primary" href="{{ route('admin.dashboard') }}">Ver painel</a>
-                    <a class="button button-muted" href="{{ route('login') }}">Fluxo de login</a>
+                    @auth
+                        <a class="button button-primary" href="{{ route('admin.dashboard') }}">Ver painel</a>
+                    @endauth
                 </div>
             </aside>
         </section>

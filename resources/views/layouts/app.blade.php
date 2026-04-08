@@ -50,10 +50,10 @@
                                         <a class="nav-link {{ request()->routeIs('igrejas.*') ? 'active' : '' }}" href="{{ route('igrejas.index') }}">Igrejas</a>
                                     @endif
                                     @if (auth()->user()->hasPermission('documentos.visualizar'))
-                                        <a class="nav-link {{ request()->routeIs('documentos.*') ? 'active' : '' }}" href="{{ route('documentos.index') }}">Docs</a>
+                                        <a class="nav-link {{ request()->routeIs('documentos.*') ? 'active' : '' }}" href="{{ route('documentos.index') }}">Documentos</a>
                                     @endif
                                     @if (auth()->user()->hasPermission('drive_accounts.visualizar'))
-                                        <a class="nav-link {{ request()->routeIs('drive-accounts.*') ? 'active' : '' }}" href="{{ route('drive-accounts.index') }}">Drive</a>
+                                        <a class="nav-link {{ request()->routeIs('drive-accounts.*') ? 'active' : '' }}" href="{{ route('drive-accounts.index') }}">Contas Drive</a>
                                     @endif
                                     @if (auth()->user()->hasPermission('tarefas.visualizar'))
                                         <a class="nav-link {{ request()->routeIs('tarefas.*') ? 'active' : '' }}" href="{{ route('tarefas.index') }}">Tarefas</a>
@@ -62,10 +62,10 @@
                                         <a class="nav-link {{ request()->routeIs('tags.*') ? 'active' : '' }}" href="{{ route('tags.index') }}">Tags</a>
                                     @endif
                                     @if (auth()->user()->hasPermission('users.visualizar'))
-                                        <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">Users</a>
+                                        <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">Usuários</a>
                                     @endif
                                     @if (auth()->user()->hasPermission('logs.visualizar'))
-                                        <a class="nav-link {{ request()->routeIs('audit-logs.*') ? 'active' : '' }}" href="{{ route('audit-logs.index') }}">Audit</a>
+                                        <a class="nav-link {{ request()->routeIs('audit-logs.*') ? 'active' : '' }}" href="{{ route('audit-logs.index') }}">Auditoria</a>
                                     @endif
                                 @endauth
                                 <a class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}" href="{{ route('profile.edit') }}">Perfil</a>
@@ -84,7 +84,7 @@
                                         <button class="button button-primary" type="submit">Sair</button>
                                     </form>
                                 @else
-                                    <a class="button button-primary" href="{{ route('login') }}">Acesso seguro</a>
+                                    <a class="button button-primary" href="{{ route('login') }}">Acesso</a>
                                 @endauth
                             </div>
                         </div>

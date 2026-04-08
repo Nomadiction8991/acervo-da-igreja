@@ -38,7 +38,7 @@
                                 <img src="{{ asset('logo-acervo.png') }}" alt="Logo Acervo da Igreja" class="brand-mark-img">
                                 <span>
                                     <span class="brand-title">{{ config('app.name', 'Acervo da Igreja') }}</span>
-                                    <span class="brand-subtitle">Fluxos protegidos da equipe interna</span>
+                                    <span class="brand-subtitle">Portal público e acesso da equipe</span>
                                 </span>
                             </a>
 

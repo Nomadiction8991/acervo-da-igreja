@@ -114,6 +114,7 @@ jobs:
           cp ../.env.example .env
           python3 - <<'PY'
           from pathlib import Path
+          import json
 
           env_path = Path('.env')
           values = {
@@ -135,6 +136,12 @@ jobs:
               'GOOGLE_DRIVE_REDIRECT_URI': '${{ secrets.GOOGLE_DRIVE_REDIRECT_URI }}',
           }
 
+          def format_value(value: str) -> str:
+              if value in {'true', 'false', 'null', 'empty'}:
+                  return value
+
+              return json.dumps(value, ensure_ascii=False)
+
           lines = env_path.read_text().splitlines()
           updated = []
 
@@ -145,7 +152,7 @@ jobs:
 
               key, _ = line.split('=', 1)
               if key in values:
-                  updated.append(f'{key}={values[key]}')
+                  updated.append(f'{key}={format_value(values[key])}')
               else:
                   updated.append(line)
 

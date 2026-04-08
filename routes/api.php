@@ -11,10 +11,10 @@ Route::get('/igrejas/{igreja}', [PublicIgrejaController::class, 'show'])->name('
 
 // Auth routes (public)
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-Route::get('/me', [AuthController::class, 'me'])->middleware('auth:sanctum');
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:web');
+Route::get('/me', [AuthController::class, 'me'])->middleware('auth:web');
 
 // API V1 routes (protected)
-Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
+Route::prefix('v1')->middleware('auth:web')->group(function () {
     Route::apiResource('igrejas', IgrejaApiController::class);
 });

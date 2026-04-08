@@ -1,0 +1,29 @@
+name: Publicacao via FTP
+
+on:
+  workflow_run:
+    workflows: ["Preparar pacote de producao"]
+    types:
+      - completed
+
+jobs:
+  publicar-prod:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar pacote de deploy
+        uses: actions/download-artifact@v4
+        with:
+          name: release-package
+          path: ./release-package
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Publicar no FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: anvy.com.br
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./release-package/
+          server-dir: acervodaigreja.anvy.com.br

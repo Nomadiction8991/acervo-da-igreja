@@ -63,11 +63,17 @@
                 <div class="grid gap-4 mt-4 lg:grid-cols-2">
                     <div>
                         <p class="field-block__label mb-2">Antes</p>
-                        <pre class="text-xs overflow-auto bg-[var(--surface-inset)] rounded-lg p-3">{{ json_encode($log->old_values ?? $log->antes, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+                        @php
+                            $before = $log->old_values ?? $log->antes;
+                        @endphp
+                        <pre class="text-xs overflow-auto bg-[var(--surface-inset)] rounded-lg p-3">{{ is_string($before) ? $before : json_encode($before, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
                     </div>
                     <div>
                         <p class="field-block__label mb-2">Depois</p>
-                        <pre class="text-xs overflow-auto bg-[var(--surface-inset)] rounded-lg p-3">{{ json_encode($log->new_values ?? $log->depois, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
+                        @php
+                            $after = $log->new_values ?? $log->depois;
+                        @endphp
+                        <pre class="text-xs overflow-auto bg-[var(--surface-inset)] rounded-lg p-3">{{ is_string($after) ? $after : json_encode($after, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre>
                     </div>
                 </div>
             </article>

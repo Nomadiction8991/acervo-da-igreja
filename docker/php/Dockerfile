@@ -1,16 +1,21 @@
-FROM php:8.4-apache
+FROM php:8.3-apache
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         default-mysql-client \
         git \
+        libfreetype6-dev \
         libicu-dev \
+        libjpeg62-turbo-dev \
         libonig-dev \
+        libpng-dev \
         libzip-dev \
         unzip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j"$(nproc)" \
         bcmath \
         exif \
+        gd \
         intl \
         mbstring \
         pcntl \

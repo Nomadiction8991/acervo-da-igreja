@@ -1,0 +1,64 @@
+services:
+  migrate:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    command: ["php", "artisan", "migrate", "--seed", "--force"]
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    working_dir: /var/www/html
+    environment:
+      APP_PORT: "${APP_PORT:-8000}"
+    volumes:
+      - ./:/var/www/html
+    ports:
+      - "${APP_PORT:-8000}:${APP_PORT:-8000}"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  node:
+    image: node:24-alpine
+    working_dir: /var/www/html
+    command: >
+      sh -lc 'if [ ! -d node_modules ] || [ -z "$(ls -A node_modules 2>/dev/null)" ];
+      then npm install; fi && npm run dev -- --host 0.0.0.0 --port ${VITE_PORT:-5173}'
+    volumes:
+      - ./:/var/www/html
+      - node_modules:/var/www/html/node_modules
+    ports:
+      - "${VITE_PORT:-5173}:5173"
+    depends_on:
+      - app
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: "${DB_DATABASE:-laravel}"
+      MYSQL_USER: "${DB_USERNAME:-sail}"
+      MYSQL_PASSWORD: "${DB_PASSWORD:-password}"
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD:-password}"
+    ports:
+      - "${FORWARD_DB_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p${DB_PASSWORD:-password} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mysql_data:
+  node_modules:

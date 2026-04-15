@@ -18,15 +18,7 @@ jobs:
           tools: composer:v2
           coverage: none
 
-      - name: Cache vendor
-        id: cache-vendor
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: vendor-${{ runner.os }}-${{ hashFiles('composer.lock') }}
-
       - name: Instalar dependencias PHP
-        if: steps.cache-vendor.outputs.cache-hit != 'true'
         run: composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
 
       - name: Montar pacote de deploy

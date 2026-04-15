@@ -402,3 +402,56 @@
     max-width: calc(100vw - (var(--app-page-gutter) * 2));
   }
 }
+
+.page-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(10, 13, 20, 0.52);
+  backdrop-filter: blur(12px) saturate(120%);
+}
+
+.page-loader.is-active {
+  display: flex;
+}
+
+.page-loader__panel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--surface-overlay) 94%, transparent);
+  box-shadow: 0 18px 42px rgba(2, 4, 8, 0.18);
+  color: var(--text-primary);
+}
+
+.page-loader__spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid color-mix(in srgb, var(--accent-primary) 26%, transparent);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 0.85s linear infinite;
+}
+
+.page-loader__text {
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+body.is-loading {
+  overflow: hidden;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

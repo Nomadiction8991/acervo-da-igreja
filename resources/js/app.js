@@ -1,5 +1,171 @@
 // Theme Toggle Script
 document.addEventListener('DOMContentLoaded', () => {
+  const loader = document.getElementById('page-loader');
+  let activeRequests = 0;
+  const hasNoLoaderFlag = (element) => element instanceof Element
+    && element.closest('[data-no-loader]') !== null;
+
+  const setLoaderVisible = (visible) => {
+    if (!loader) {
+      return;
+    }
+
+    loader.classList.toggle('is-active', visible);
+    loader.setAttribute('aria-hidden', visible ? 'false' : 'true');
+    document.body.classList.toggle('is-loading', visible);
+  };
+
+  const showLoader = () => {
+    activeRequests += 1;
+    setLoaderVisible(true);
+  };
+
+  const hideLoader = () => {
+    if (activeRequests > 0) {
+      activeRequests -= 1;
+    }
+
+    if (activeRequests === 0) {
+      setLoaderVisible(false);
+    }
+  };
+
+  const nativeFetch = window.fetch.bind(window);
+  const nativeFormSubmit = HTMLFormElement.prototype.submit;
+  window.fetch = (...args) => {
+    showLoader();
+
+    try {
+      return nativeFetch(...args).finally(() => {
+        hideLoader();
+      });
+    } catch (error) {
+      hideLoader();
+      throw error;
+    }
+  };
+
+  const nativeXHROpen = XMLHttpRequest.prototype.open;
+  const nativeXHRSend = XMLHttpRequest.prototype.send;
+
+  XMLHttpRequest.prototype.open = function open(method, url, ...rest) {
+    this.__pageLoaderTracked = true;
+
+    return nativeXHROpen.call(this, method, url, ...rest);
+  };
+
+  XMLHttpRequest.prototype.send = function send(...args) {
+    if (!this.__pageLoaderTracked) {
+      return nativeXHRSend.apply(this, args);
+    }
+
+    showLoader();
+    this.addEventListener('loadend', hideLoader, { once: true });
+    try {
+      return nativeXHRSend.apply(this, args);
+    } catch (error) {
+      this.removeEventListener('loadend', hideLoader);
+      hideLoader();
+      throw error;
+    }
+  };
+
+  document.addEventListener('submit', (event) => {
+    const form = event.target;
+
+    if (!(form instanceof HTMLFormElement)) {
+      return;
+    }
+
+    if (hasNoLoaderFlag(form)) {
+      return;
+    }
+
+    event.preventDefault();
+    showLoader();
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        try {
+          nativeFormSubmit.call(form);
+        } catch (error) {
+          hideLoader();
+          throw error;
+        }
+      });
+    });
+  }, true);
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+
+    if (!(target instanceof Element)) {
+      return;
+    }
+
+    const link = target.closest('a');
+
+    if (!(link instanceof HTMLAnchorElement)) {
+      return;
+    }
+
+    if (hasNoLoaderFlag(link)) {
+      return;
+    }
+
+    if (link.target && link.target !== '_self') {
+      return;
+    }
+
+    if (link.hasAttribute('download')) {
+      return;
+    }
+
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+
+    const href = link.getAttribute('href');
+
+    if (!href) {
+      return;
+    }
+
+    const trimmedHref = href.trim();
+
+    if (
+      trimmedHref === ''
+      || trimmedHref.startsWith('#')
+      || trimmedHref.toLowerCase().startsWith('javascript:')
+      || trimmedHref.toLowerCase().startsWith('mailto:')
+      || trimmedHref.toLowerCase().startsWith('tel:')
+    ) {
+      return;
+    }
+
+    event.preventDefault();
+    showLoader();
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        try {
+          window.location.href = trimmedHref;
+        } catch (error) {
+          hideLoader();
+          throw error;
+        }
+      });
+    });
+  }, true);
+
+  window.addEventListener('beforeunload', () => {
+    activeRequests = 0;
+    setLoaderVisible(false);
+  });
+
+  window.addEventListener('pageshow', () => {
+    activeRequests = 0;
+    setLoaderVisible(false);
+  });
+
   const normalizeCepDigits = (value) => (value ?? '').replace(/\D/g, '').slice(0, 8);
   const formatCep = (value) => {
     const digits = normalizeCepDigits(value);

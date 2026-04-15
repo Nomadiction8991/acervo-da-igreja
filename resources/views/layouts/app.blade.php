@@ -169,5 +169,12 @@
                 @endisset
             </div>
         </div>
+
+        <div id="page-loader" class="page-loader" aria-hidden="true">
+            <div class="page-loader__panel" role="status" aria-live="polite" aria-label="Carregando">
+                <span class="page-loader__spinner" aria-hidden="true"></span>
+                <span class="page-loader__text">Carregando...</span>
+            </div>
+        </div>
     </body>
 </html>

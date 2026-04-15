@@ -19,7 +19,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
 
-      - name: Publicar no FT
+      - name: Publicar no FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: anvy.com.br

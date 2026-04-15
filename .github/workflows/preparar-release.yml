@@ -41,10 +41,7 @@ jobs:
             --exclude 'resources/' \
             --exclude 'storage/logs/' \
             --exclude 'storage/framework/testing/' \
-            --exclude 'public/build/' \
             ./ deploy/
-          mkdir -p deploy/public/build
-          cp -a public/build/. deploy/public/build/
 
       - name: Gerar .env de producao
         working-directory: deploy

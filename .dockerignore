@@ -1,7 +1,5 @@
 .env
 .git
-node_modules
-public/build
 public/hot
 storage/logs
 vendor

@@ -5,7 +5,9 @@
                 <a href="{{ route('users.index') }}" class="text-sm opacity-75 hover:underline">← Usuarios</a>
                 <h1 class="section-title mt-1">{{ $user->name }}</h1>
             </div>
-            <a href="{{ route('users.edit', $user) }}" class="button button-primary">Editar</a>
+            @unless ($user->is_admin)
+                <a href="{{ route('users.edit', $user) }}" class="button button-primary">Editar</a>
+            @endunless
         </div>
     </x-slot>
 
@@ -42,16 +44,18 @@
                 <p class="text-sm text-[var(--text-secondary)]">Documentos: {{ $user->documentos->count() }}</p>
             </div>
 
-            <div class="surface panel-padding border border-red-900/30">
-                <p class="eyebrow text-red-400 mb-3">Zona de perigo</p>
-                <form method="POST" action="{{ route('users.destroy', $user) }}">
-                    @csrf
-                    @method('DELETE')
-                    <button class="button button-ghost w-full border-red-900/40 text-red-400" type="submit" onclick="return confirm('Remover este usuario?')">
-                        Deletar usuario
-                    </button>
-                </form>
-            </div>
+            @unless ($user->is_admin)
+                <div class="surface panel-padding border border-red-900/30">
+                    <p class="eyebrow text-red-400 mb-3">Zona de perigo</p>
+                    <form method="POST" action="{{ route('users.destroy', $user) }}">
+                        @csrf
+                        @method('DELETE')
+                        <button class="button button-ghost w-full border-red-900/40 text-red-400" type="submit" onclick="return confirm('Remover este usuario?')">
+                            Deletar usuario
+                        </button>
+                    </form>
+                </div>
+            @endunless
         </div>
     </div>
 </x-app-layout>

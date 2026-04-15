@@ -17,7 +17,9 @@ final class IgrejaService
     {
         /** @var Igreja */
         return DB::transaction(function () use ($data): Igreja {
-            return Igreja::query()->create($this->normalizeData($data));
+            $igreja = Igreja::query()->create($this->normalizeData($data));
+
+            return $igreja->refresh();
         });
     }
 

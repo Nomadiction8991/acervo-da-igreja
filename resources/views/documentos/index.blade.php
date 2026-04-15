@@ -6,7 +6,6 @@
                 <h1 class="section-title mt-1">Documentos</h1>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('documentos.export') }}" class="button button-muted">📊 Exportar Excel</a>
                 @can('create', App\Models\Documento::class)
                     <a href="{{ route('documentos.create') }}" class="button button-primary">+ Novo documento</a>
                 @endcan
@@ -64,44 +63,45 @@
         </form>
     </div>
 
-    <div class="surface rounded-xl overflow-hidden">
-        <table class="w-full text-sm">
+    <div class="resource-table-shell">
+        <div class="resource-table-scroll">
+        <table class="resource-table">
             <thead>
-                <tr class="border-b border-[var(--border-subtle)]">
-                    <th class="px-4 py-3 text-left">Titulo</th>
-                    <th class="px-4 py-3 text-left hidden md:table-cell">Igreja</th>
-                    <th class="px-4 py-3 text-left hidden lg:table-cell">Tipo</th>
-                    <th class="px-4 py-3 text-left">Status Drive</th>
-                    <th class="px-4 py-3 text-right">Acoes</th>
+                <tr>
+                    <th>Titulo</th>
+                    <th class="hidden md:table-cell">Igreja</th>
+                    <th class="hidden lg:table-cell">Tipo</th>
+                    <th>Status Drive</th>
+                    <th>Acoes</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($documentos as $documento)
-                    <tr class="border-b border-[var(--border-subtle)] last:border-0">
-                        <td class="px-4 py-4">
-                            <a href="{{ route('documentos.show', $documento) }}" class="font-semibold hover:underline">
-                                {{ $documento->titulo }}
-                            </a>
-                            <div class="text-xs text-[var(--text-secondary)] mt-1">
-                                {{ $documento->publico ? 'Publico' : 'Privado' }}
-                            </div>
-                            <div class="text-xs text-[var(--text-secondary)] mt-1">
-                                @if ($documento->driveAccount)
-                                    Drive: {{ $documento->driveAccount->nome }}{{ $documento->driveAccount->email ? ' · '.$documento->driveAccount->email : '' }}
-                                @else
-                                    Drive: sem conta vinculada
-                                @endif
+                    <tr>
+                        <td>
+                            <div class="resource-table__main">
+                                <a href="{{ route('documentos.show', $documento) }}" class="resource-table__title">
+                                    {{ $documento->titulo }}
+                                </a>
+                                <div class="resource-table__meta">{{ $documento->publico ? 'Publico' : 'Privado' }}</div>
+                                <div class="resource-table__subtle">
+                                    @if ($documento->driveAccount)
+                                        Drive: {{ $documento->driveAccount->nome }}{{ $documento->driveAccount->email ? ' · '.$documento->driveAccount->email : '' }}
+                                    @else
+                                        Drive: sem conta vinculada
+                                    @endif
+                                </div>
                             </div>
                         </td>
-                        <td class="px-4 py-4 hidden md:table-cell">{{ $documento->igreja->nome_fantasia }}</td>
-                        <td class="px-4 py-4 hidden lg:table-cell">{{ $documento->tipo }}</td>
-                        <td class="px-4 py-4">
+                        <td class="hidden md:table-cell"><span class="resource-table__meta">{{ $documento->igreja->nome_fantasia }}</span></td>
+                        <td class="hidden lg:table-cell"><span class="resource-table__meta">{{ $documento->tipo }}</span></td>
+                        <td>
                             <span class="chip chip--{{ $documento->driveStatusChipVariant() }}">
                                 {{ $documento->driveStatusLabel() }}
                             </span>
                         </td>
-                        <td class="px-4 py-4">
-                            <div class="flex justify-end gap-2">
+                        <td>
+                            <div class="resource-table__actions">
                                 @can('update', $documento)
                                     @if ($documento->driveAccount)
                                         <form method="POST" action="{{ route('documentos.sync-drive', $documento) }}">
@@ -117,11 +117,12 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-[var(--text-secondary)]">Nenhum documento encontrado.</td>
+                        <td colspan="5" class="resource-table__empty">Nenhum documento encontrado.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
+        </div>
     </div>
 
     <div class="mt-6">

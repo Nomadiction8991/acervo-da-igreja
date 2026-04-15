@@ -6,8 +6,6 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="theme-color" content="#f5efe6">
 
-        <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
-
         <title>{{ config('app.name', 'Acervo da Igreja') }}</title>
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,43 +19,48 @@
             (() => {
                 const storedTheme = localStorage.getItem('acervo-igreja-theme');
                 const theme = storedTheme ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                const themeMeta = document.querySelector('meta[name="theme-color"]');
 
                 document.documentElement.dataset.theme = theme;
+
+                if (themeMeta) {
+                    themeMeta.setAttribute('content', theme === 'dark' ? '#0a0d14' : '#f4ede2');
+                }
             })();
         </script>
 
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
+        <script src="{{ asset('js/app.js') }}" defer></script>
     </head>
     <body>
+        @php
+            $guestTopbarLinks = [
+                [
+                    'label' => 'Portal',
+                    'href' => route('portal.index'),
+                    'active' => request()->routeIs('portal.index'),
+                ],
+            ];
+        @endphp
+
         <div class="app-shell">
             <div class="page-frame">
-                <section class="guest-shell surface">
-                    <div class="panel-padding">
-                        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                            <a class="brand-lockup" href="{{ route('portal.index') }}">
-                                <img src="{{ asset('logo-acervo.png') }}" alt="Logo Acervo da Igreja" class="brand-mark-img">
-                                <span>
-                                    <span class="brand-title">{{ config('app.name', 'Acervo da Igreja') }}</span>
-                                    <span class="brand-subtitle">Portal público e acesso da equipe</span>
-                                </span>
-                            </a>
+                <x-menu
+                    menu-id="guest-app-menu-toggle"
+                    :links="$guestTopbarLinks"
+                >
+                    <x-slot name="desktopActions">
+                        <a class="button button-primary" href="{{ route('login') }}">Acesso</a>
+                    </x-slot>
 
-                            <div class="flex items-center gap-2">
-                                <button class="theme-toggle" type="button" data-theme-toggle>
-                                    <span class="theme-toggle__orb" aria-hidden="true"></span>
-                                    <span data-theme-label>Tema claro</span>
-                                </button>
+                    <x-slot name="mobileFooter">
+                        <a class="button button-primary w-full" href="{{ route('login') }}">Acesso</a>
+                    </x-slot>
+                </x-menu>
 
-                                <a class="button button-muted" href="{{ route('portal.index') }}">Voltar ao portal</a>
-                            </div>
-                        </div>
-
-                        <div class="mt-5 vitrail-band"></div>
-                    </div>
-
-                    <div class="guest-shell__body">
-                        {{ $slot }}
-                    </div>
+                <section class="panel-padding">
+                    {{ $slot }}
                 </section>
             </div>
         </div>

@@ -19,7 +19,13 @@
     <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
 
         {{-- Dados principais --}}
-        <form method="POST" action="{{ route('igrejas.update', $igreja) }}" class="surface panel-padding space-y-5">
+        <form
+            method="POST"
+            action="{{ route('igrejas.update', $igreja) }}"
+            class="surface panel-padding space-y-5"
+            data-cep-lookup-form
+            data-cep-lookup-url-template="{{ route('ceps.show', ['cep' => '__CEP__']) }}"
+        >
             @csrf
             @method('PUT')
 
@@ -60,12 +66,14 @@
                 <div class="field-block">
                     <label class="field-block__label" for="cep">CEP</label>
                     <input class="field-control" type="text" id="cep" name="cep"
-                           value="{{ old('cep', $igreja->cep) }}">
+                           value="{{ old('cep', $igreja->cep) }}" inputmode="numeric" maxlength="9"
+                           autocomplete="postal-code" data-cep-input>
+                    <p class="text-sm text-[var(--text-secondary)] mt-2 min-h-[1.25rem]" data-cep-status aria-live="polite"></p>
                 </div>
                 <div class="field-block">
                     <label class="field-block__label" for="endereco">Endereço</label>
                     <input class="field-control" type="text" id="endereco" name="endereco"
-                           value="{{ old('endereco', $igreja->endereco) }}">
+                           value="{{ old('endereco', $igreja->endereco) }}" autocomplete="address-line1" data-address-input>
                 </div>
             </div>
 
@@ -73,12 +81,13 @@
                 <div class="field-block">
                     <label class="field-block__label" for="cidade">Cidade</label>
                     <input class="field-control" type="text" id="cidade" name="cidade"
-                           value="{{ old('cidade', $igreja->cidade) }}">
+                           value="{{ old('cidade', $igreja->cidade) }}" autocomplete="address-level2" data-city-input>
                 </div>
                 <div class="field-block">
                     <label class="field-block__label" for="estado">UF</label>
                     <input class="field-control" type="text" id="estado" name="estado"
-                           value="{{ old('estado', $igreja->estado) }}" maxlength="2">
+                           value="{{ old('estado', $igreja->estado) }}" maxlength="2"
+                           autocomplete="address-level1" data-state-input>
                 </div>
             </div>
 

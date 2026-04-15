@@ -6,7 +6,6 @@
                 <h1 class="section-title mt-1">Igrejas</h1>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('igrejas.export') }}" class="button button-muted">📊 Exportar Excel</a>
                 @can('create', App\Models\Igreja::class)
                     <a href="{{ route('igrejas.create') }}" class="button button-primary">+ Nova Igreja</a>
                 @endcan
@@ -45,53 +44,56 @@
             @endcan
         </div>
     @else
-        <div class="surface rounded-xl overflow-hidden">
-            <table class="w-full text-sm">
+        <div class="resource-table-shell">
+            <div class="resource-table-scroll">
+            <table class="resource-table">
                 <thead>
-                    <tr class="border-b border-[var(--border-subtle)]">
-                        <th class="px-5 py-3 text-left">
+                    <tr>
+                        <th>
                             <x-sortable-header column="codigo_controle" label="Código" :sortBy="$sortBy" :sortDir="$sortDir" />
                         </th>
-                        <th class="px-5 py-3 text-left">
+                        <th>
                             <x-sortable-header column="nome_fantasia" label="Nome" :sortBy="$sortBy" :sortDir="$sortDir" />
                         </th>
-                        <th class="px-5 py-3 text-left hidden md:table-cell">
+                        <th class="hidden md:table-cell">
                             <x-sortable-header column="cidade" label="Cidade" :sortBy="$sortBy" :sortDir="$sortDir" />
                         </th>
-                        <th class="px-5 py-3 text-left hidden lg:table-cell">
+                        <th class="hidden lg:table-cell">
                             <span class="field-block__label">Modulos</span>
                         </th>
-                        <th class="px-5 py-3 text-right">
+                        <th>
                             <span class="field-block__label">Ações</span>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($igrejas as $igreja)
-                        <tr class="border-b border-[var(--border-subtle)] last:border-0 hover:bg-[var(--surface-inset)] transition-colors">
-                            <td class="px-5 py-4 font-mono text-xs text-[var(--text-secondary)]">
-                                {{ $igreja->codigo_controle }}
+                        <tr>
+                            <td>
+                                <span class="resource-table__code">{{ $igreja->codigo_controle }}</span>
                             </td>
-                            <td class="px-5 py-4 font-semibold text-[var(--text-primary)]">
-                                @if ($igreja->trashed())
-                                    <span>{{ $igreja->nome_fantasia }}</span>
-                                @else
-                                    <a href="{{ route('igrejas.show', $igreja) }}" class="hover:underline">
-                                        {{ $igreja->nome_fantasia }}
-                                    </a>
-                                @endif
-                                @if ($igreja->trashed())
-                                    <span class="chip chip--private ml-2 text-[0.65rem]">Inativa</span>
-                                @endif
+                            <td>
+                                <div class="resource-table__main">
+                                    @if ($igreja->trashed())
+                                        <span class="resource-table__title">{{ $igreja->nome_fantasia }}</span>
+                                    @else
+                                        <a href="{{ route('igrejas.show', $igreja) }}" class="resource-table__title">
+                                            {{ $igreja->nome_fantasia }}
+                                        </a>
+                                    @endif
+                                    @if ($igreja->trashed())
+                                        <span class="resource-table__status resource-table__status--muted">Inativa</span>
+                                    @endif
+                                </div>
                             </td>
-                            <td class="px-5 py-4 text-[var(--text-secondary)] hidden md:table-cell">
-                                {{ $igreja->cidade ? $igreja->cidade.', '.$igreja->estado : '—' }}
+                            <td class="hidden md:table-cell">
+                                <span class="resource-table__meta">{{ $igreja->cidade ? $igreja->cidade.', '.$igreja->estado : '—' }}</span>
                             </td>
-                            <td class="px-5 py-4 text-[var(--text-secondary)] hidden lg:table-cell">
-                                {{ $igreja->fotos_count }} foto(s) · {{ $igreja->documentos_count }} doc(s) · {{ $igreja->tarefas_count }} tarefa(s)
+                            <td class="hidden lg:table-cell">
+                                <span class="resource-table__meta">{{ $igreja->fotos_count }} foto(s) · {{ $igreja->documentos_count }} doc(s) · {{ $igreja->tarefas_count }} tarefa(s)</span>
                             </td>
-                            <td class="px-5 py-4">
-                                <div class="flex justify-end gap-2">
+                            <td>
+                                <div class="resource-table__actions">
                                     @if (! $igreja->trashed())
                                         <a href="{{ route('igrejas.show', $igreja) }}" class="button button-muted text-xs">Ver</a>
                                         @can('update', $igreja)
@@ -106,6 +108,7 @@
                     @endforeach
                 </tbody>
             </table>
+            </div>
         </div>
 
         <div class="mt-6">

@@ -1,11 +1,11 @@
 <x-guest-layout>
-    <section class="grid gap-6 place-items-center">
-        <article class="surface panel-padding w-full max-w-lg">
-            <div class="flex items-center justify-between gap-3">
-                <div>
-                    <p class="eyebrow">Login real</p>
-                    <h2 class="section-title mt-2">Identificacao da equipe</h2>
-                </div>
+    <section class="auth-shell">
+        <article class="auth-card surface-strong panel-padding">
+            <div class="auth-card__head">
+                <p class="eyebrow">Acesso restrito</p>
+                <p class="auth-lead">
+                    Entre para gerenciar igrejas, documentos, fotos e auditoria com o mesmo ambiente visual do portal.
+                </p>
             </div>
 
             @if (session('status'))
@@ -20,7 +20,7 @@
                 </div>
             @endif
 
-            <form class="mt-8 space-y-4" method="POST" action="{{ route('login') }}">
+            <form class="auth-form" method="POST" action="{{ route('login') }}">
                 @csrf
 
                 <label class="field-block">
@@ -55,14 +55,14 @@
                     @enderror
                 </label>
 
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="auth-form__row">
                     <label class="checkbox-line">
                         <input type="checkbox" name="remember" value="1" @checked(old('remember'))>
                         <span>Manter sessao neste dispositivo</span>
                     </label>
                 </div>
 
-                <button class="button button-primary w-full justify-center" type="submit">Entrar no painel</button>
+                <button class="button button-primary auth-form__submit" type="submit">Entrar no painel</button>
             </form>
         </article>
     </section>

@@ -25,7 +25,9 @@ final class IgrejaController extends Controller
     {
         $this->authorize('viewAny', Igreja::class);
 
-        $search = request()->input('q');
+        $search = request()->filled('q')
+            ? request()->string('q')->toString()
+            : null;
         $sortBy = request()->input('sort_by', 'nome_fantasia');
         $sortDir = request()->input('sort_dir', 'asc');
         $status = request()->input('status', 'ativas');
@@ -52,7 +54,6 @@ final class IgrejaController extends Controller
     public function create(): View
     {
         $this->authorize('create', Igreja::class);
-
         return view('igrejas.create');
     }
 
@@ -79,7 +80,6 @@ final class IgrejaController extends Controller
     public function edit(Igreja $igreja): View
     {
         $this->authorize('update', $igreja);
-
         return view('igrejas.edit', compact('igreja'));
     }
 

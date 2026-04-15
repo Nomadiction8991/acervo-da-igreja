@@ -1,61 +1,72 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="text-2xl font-bold">Igrejas Públicas</h2>
-            @guest
-                <a href="{{ route('login') }}" class="button button-primary">
-                    Entrar no Sistema
-                </a>
-            @endguest
-        </div>
-    </x-slot>
-
     @if ($igrejas->isEmpty())
-        <p class="text-gray-500">Nenhuma igreja cadastrada.</p>
+        <section class="empty-state">
+            <p class="section-title">Nenhuma igreja cadastrada.</p>
+            <p class="mt-3 text-secondary">Quando houver registros públicos, eles aparecerão aqui em cards por cidade e por igreja.</p>
+        </section>
     @else
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <section class="church-grid">
             @foreach ($igrejas as $igreja)
-                <div class="surface rounded-lg overflow-hidden hover:shadow-lg transition">
-                    @php
-                        $fotoPrincipal = $igreja->fotosPublicas()->first();
-                    @endphp
+                @php
+                    $fotoPrincipal = $igreja->fotosPublicas()->first();
+                @endphp
 
-                    @if ($fotoPrincipal)
-                        <img src="{{ route('files.fotos.show', $fotoPrincipal) }}"
-                             alt="{{ $igreja->nome_fantasia }}"
-                             class="w-full h-48 object-cover">
-                    @else
-                        <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
-                            <span class="text-gray-400">Sem foto</span>
-                        </div>
-                    @endif
-
-                    <div class="p-4">
-                        <h3 class="text-lg font-bold mb-2">
-                            <a href="{{ route('portal.show', $igreja) }}" class="hover:underline">
-                                {{ $igreja->nome_fantasia }}
-                            </a>
-                        </h3>
-
-                        @if ($igreja->esCampoPublico('cidade'))
-                            <p class="text-sm mb-1">
-                                {{ $igreja->cidade }}, {{ $igreja->estado }}
-                            </p>
+                <article class="church-card">
+                    <div class="church-card__media">
+                        @if ($fotoPrincipal)
+                            <img
+                                src="{{ route('files.fotos.show', $fotoPrincipal) }}"
+                                alt="{{ $igreja->nome_fantasia }}"
+                                class="church-card__image"
+                            >
+                        @else
+                            <div class="church-card__fallback">
+                                <span class="church-card__fallback-label">Sem foto pública</span>
+                            </div>
                         @endif
-
-                        @if ($igreja->esCampoPublico('endereco'))
-                            <p class="text-sm mb-2">{{ $igreja->endereco }}</p>
-                        @endif
-
-                        <a href="{{ route('portal.show', $igreja) }}" class="button button-primary mt-4 inline-block">
-                            Ver Detalhes
-                        </a>
                     </div>
-                </div>
-            @endforeach
-        </div>
 
-        <div class="mt-8">
+                    <div class="church-card__body">
+                        <div class="church-card__head">
+                            <div>
+                                <p class="eyebrow">{{ $igreja->cidade ?? 'Cidade não informada' }}</p>
+                                <h2 class="section-title mt-2">
+                                    <a href="{{ route('portal.show', $igreja) }}" class="church-card__title">
+                                        {{ $igreja->nome_fantasia }}
+                                    </a>
+                                </h2>
+                            </div>
+
+                            <span class="chip chip--public">Visível</span>
+                        </div>
+
+                        <div class="church-card__details">
+                            @if ($igreja->esCampoPublico('cidade'))
+                                <div class="data-row">
+                                    <span class="data-row__label">Cidade</span>
+                                    <span class="data-row__value">{{ $igreja->cidade }}, {{ $igreja->estado }}</span>
+                                </div>
+                            @endif
+
+                            @if ($igreja->esCampoPublico('endereco'))
+                                <div class="data-row">
+                                    <span class="data-row__label">Endereço</span>
+                                    <span class="data-row__value">{{ $igreja->endereco }}</span>
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="church-card__footer">
+                            <span class="stat-pill">{{ $igreja->fotos->count() }} fotos</span>
+                            <span class="stat-pill">{{ $igreja->documentos->count() }} documentos</span>
+                            <a href="{{ route('portal.show', $igreja) }}" class="button button-primary">Ver detalhes</a>
+                        </div>
+                    </div>
+                </article>
+            @endforeach
+        </section>
+
+        <div class="pagination-shell">
             {{ $igrejas->links() }}
         </div>
     @endif

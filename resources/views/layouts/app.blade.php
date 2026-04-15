@@ -6,8 +6,6 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="theme-color" content="#f5efe6">
 
-        <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
-
         <title>@yield('title', config('app.name', 'Acervo da Igreja'))</title>
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,80 +19,145 @@
             (() => {
                 const storedTheme = localStorage.getItem('acervo-igreja-theme');
                 const theme = storedTheme ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                const themeMeta = document.querySelector('meta[name="theme-color"]');
 
                 document.documentElement.dataset.theme = theme;
+
+                if (themeMeta) {
+                    themeMeta.setAttribute('content', theme === 'dark' ? '#0a0d14' : '#f4ede2');
+                }
             })();
         </script>
 
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+        <link rel="stylesheet" href="{{ asset('css/menu.css') }}">
+        <script src="{{ asset('js/app.js') }}" defer></script>
     </head>
     <body>
+        @php
+            $topbarLinks = [
+                [
+                    'label' => 'Portal',
+                    'href' => route('portal.index'),
+                    'active' => request()->routeIs('portal.index'),
+                ],
+            ];
+
+            if (auth()->check()) {
+                array_unshift(
+                    $topbarLinks,
+                    [
+                        'label' => 'Painel',
+                        'href' => route('admin.dashboard'),
+                        'active' => request()->routeIs('admin.dashboard'),
+                    ],
+                    [
+                        'label' => 'Igrejas',
+                        'href' => route('igrejas.index'),
+                        'active' => request()->routeIs('igrejas.*'),
+                    ],
+                );
+
+                if (auth()->user()->hasPermission('documentos.visualizar')) {
+                    $topbarLinks[] = [
+                        'label' => 'Documentos',
+                        'href' => route('documentos.index'),
+                        'active' => request()->routeIs('documentos.*'),
+                    ];
+                }
+
+                if (auth()->user()->hasPermission('grupos_documentos.visualizar')) {
+                    $topbarLinks[] = [
+                        'label' => 'Grupos de Documentos',
+                        'href' => route('grupo-documentos.index'),
+                        'active' => request()->routeIs('grupo-documentos.*'),
+                    ];
+                }
+
+                if (auth()->user()->hasPermission('drive_accounts.visualizar')) {
+                    $topbarLinks[] = [
+                        'label' => 'Contas Drive',
+                        'href' => route('drive-accounts.index'),
+                        'active' => request()->routeIs('drive-accounts.*'),
+                    ];
+                }
+
+                if (auth()->user()->hasPermission('tarefas.visualizar')) {
+                    $topbarLinks[] = [
+                        'label' => 'Tarefas',
+                        'href' => route('tarefas.index'),
+                        'active' => request()->routeIs('tarefas.*'),
+                    ];
+                }
+
+                if (auth()->user()->hasPermission('users.visualizar')) {
+                    $topbarLinks[] = [
+                        'label' => 'Usuários',
+                        'href' => route('users.index'),
+                        'active' => request()->routeIs('users.*'),
+                    ];
+                }
+
+                if (auth()->user()->hasPermission('logs.visualizar')) {
+                    $topbarLinks[] = [
+                        'label' => 'Auditoria',
+                        'href' => route('audit-logs.index'),
+                        'active' => request()->routeIs('audit-logs.*'),
+                    ];
+                }
+
+                $topbarLinks[] = [
+                    'label' => 'Perfil',
+                    'href' => route('profile.edit'),
+                    'active' => request()->routeIs('profile.*'),
+                ];
+
+                $topbarLinks[] = [
+                    'label' => 'Suporte',
+                    'href' => 'https://suporte.anvy.com.br',
+                    'active' => false,
+                    'target' => '_blank',
+                    'rel' => 'noopener noreferrer',
+                ];
+            }
+        @endphp
+
         <div class="app-shell">
             <div class="page-frame space-y-6">
-                <header class="topbar surface">
-                    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                        <a class="brand-lockup" href="{{ route('portal.index') }}">
-                            <span>
-                                <span class="brand-title">{{ config('app.name', 'Acervo da Igreja') }}</span>
-                                <span class="brand-subtitle">Conta autenticada da equipe interna</span>
-                            </span>
-                        </a>
+                <x-menu
+                    menu-id="main-app-menu-toggle"
+                    :links="$topbarLinks"
+                    :mobile-description="auth()->check() ? 'Acesse cadastros e rotinas administrativas.' : null"
+                >
+                    <x-slot name="desktopActions">
+                        @guest
+                            <a class="button button-primary" href="{{ route('login') }}">Acesso</a>
+                        @endguest
 
-                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end flex-1">
-                            <nav class="flex flex-wrap gap-1">
-                                <a class="nav-link {{ request()->routeIs('portal.index') ? 'active' : '' }}" href="{{ route('portal.index') }}">Portal</a>
-                                <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Painel</a>
-                                <a class="nav-link {{ request()->routeIs('relatorios.dashboard') ? 'active' : '' }}" href="{{ route('relatorios.dashboard') }}">Relatórios</a>
-                                @auth
-                                    @if (auth()->user()->hasPermission('igrejas.visualizar'))
-                                        <a class="nav-link {{ request()->routeIs('igrejas.*') ? 'active' : '' }}" href="{{ route('igrejas.index') }}">Igrejas</a>
-                                    @endif
-                                    @if (auth()->user()->hasPermission('documentos.visualizar'))
-                                        <a class="nav-link {{ request()->routeIs('documentos.*') ? 'active' : '' }}" href="{{ route('documentos.index') }}">Documentos</a>
-                                    @endif
-                                    @if (auth()->user()->hasPermission('drive_accounts.visualizar'))
-                                        <a class="nav-link {{ request()->routeIs('drive-accounts.*') ? 'active' : '' }}" href="{{ route('drive-accounts.index') }}">Contas Drive</a>
-                                    @endif
-                                    @if (auth()->user()->hasPermission('tarefas.visualizar'))
-                                        <a class="nav-link {{ request()->routeIs('tarefas.*') ? 'active' : '' }}" href="{{ route('tarefas.index') }}">Tarefas</a>
-                                    @endif
-                                    @if (auth()->user()->hasPermission('tags.visualizar'))
-                                        <a class="nav-link {{ request()->routeIs('tags.*') ? 'active' : '' }}" href="{{ route('tags.index') }}">Tags</a>
-                                    @endif
-                                    @if (auth()->user()->hasPermission('users.visualizar'))
-                                        <a class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}">Usuários</a>
-                                    @endif
-                                    @if (auth()->user()->hasPermission('logs.visualizar'))
-                                        <a class="nav-link {{ request()->routeIs('audit-logs.*') ? 'active' : '' }}" href="{{ route('audit-logs.index') }}">Auditoria</a>
-                                    @endif
-                                @endauth
-                                <a class="nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}" href="{{ route('profile.edit') }}">Perfil</a>
-                                <a class="nav-link" href="https://suporte.anvy.com.br" target="_blank" rel="noopener noreferrer">Suporte</a>
-                            </nav>
+                        @auth
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button class="button button-primary" type="submit">Sair</button>
+                            </form>
+                        @endauth
+                    </x-slot>
 
-                            <div class="flex items-center gap-2">
-                                <button class="theme-toggle" type="button" data-theme-toggle>
-                                    <span class="theme-toggle__orb" aria-hidden="true"></span>
-                                    <span data-theme-label>Tema claro</span>
-                                </button>
+                    <x-slot name="mobileFooter">
+                        @guest
+                            <a class="button button-primary w-full" href="{{ route('login') }}">Acesso</a>
+                        @endguest
 
-                                @auth
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button class="button button-primary" type="submit">Sair</button>
-                                    </form>
-                                @else
-                                    <a class="button button-primary" href="{{ route('login') }}">Acesso</a>
-                                @endauth
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-5 vitrail-band"></div>
-                </header>
+                        @auth
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button class="button button-primary w-full" type="submit">Sair</button>
+                            </form>
+                        @endauth
+                    </x-slot>
+                </x-menu>
 
                 @isset($header)
-                    <section class="surface panel-padding">
+                    <section class="surface panel-padding page-header-shell">
                         {{ $header }}
                     </section>
                 @endisset

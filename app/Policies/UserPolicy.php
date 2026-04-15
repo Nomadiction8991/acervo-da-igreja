@@ -25,11 +25,19 @@ final class UserPolicy
 
     public function update(User $user, User $model): bool
     {
+        if ($model->is_admin) {
+            return false;
+        }
+
         return $user->hasPermission('users.editar');
     }
 
     public function delete(User $user, User $model): bool
     {
+        if ($model->is_admin) {
+            return false;
+        }
+
         return $user->hasPermission('users.deletar');
     }
 }

@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AuditLog\FilterAuditLogRequest;
 use App\Models\AuditLog;
 use App\Models\User;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 final class AuditLogController extends Controller
@@ -37,12 +38,53 @@ final class AuditLogController extends Controller
         return view('audit-logs.index', [
             'logs' => $logs,
             'users' => User::query()->orderBy('name')->get(),
-            'modulos' => cache()->remember('audit_log_modulos', 3600, static function (): \Illuminate\Support\Collection {
-                return AuditLog::query()->select('modulo')->distinct()->orderBy('modulo')->pluck('modulo');
-            }),
-            'acoes' => cache()->remember('audit_log_acoes', 3600, static function (): \Illuminate\Support\Collection {
-                return AuditLog::query()->select('acao')->distinct()->orderBy('acao')->pluck('acao');
-            }),
+            'modulos' => $this->filterOptionsFor('modulo'),
+            'acoes' => $this->filterOptionsFor('acao'),
         ]);
+    }
+
+    /**
+     * @return Collection<int, string>
+     */
+    private function filterOptionsFor(string $column): Collection
+    {
+        /** @var mixed $cachedValues */
+        $cachedValues = cache()->remember(
+            key: sprintf('audit_log_%s_options_v2', $column),
+            ttl: 3600,
+            callback: static fn (): array => AuditLog::query()
+                ->select($column)
+                ->distinct()
+                ->orderBy($column)
+                ->pluck($column)
+                ->all(),
+        );
+
+        $values = match (true) {
+            $cachedValues instanceof Collection => $cachedValues->all(),
+            is_array($cachedValues) => $cachedValues,
+            default => [],
+        };
+
+        return collect($values)
+            ->map(static function (mixed $value): ?string {
+                if (is_string($value)) {
+                    return $value;
+                }
+
+                if (is_int($value) || is_float($value) || is_bool($value)) {
+                    return (string) $value;
+                }
+
+                if (is_array($value)) {
+                    $json = json_encode($value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+                    return $json === false ? null : $json;
+                }
+
+                return null;
+            })
+            ->filter(static fn (?string $value): bool => filled($value))
+            ->values();
     }
 }

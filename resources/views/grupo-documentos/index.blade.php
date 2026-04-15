@@ -19,38 +19,39 @@
         <div class="status-banner status-banner--danger mb-4">{{ $errors->first('grupo_documento') }}</div>
     @endif
 
-    <div class="surface rounded-xl overflow-hidden">
-        <table class="w-full text-sm">
+    <div class="resource-table-shell">
+        <div class="resource-table-scroll">
+        <table class="resource-table">
             <thead>
-                <tr class="border-b border-[var(--border-subtle)]">
-                    <th class="px-4 py-3 text-left">Grupo</th>
-                    <th class="px-4 py-3 text-left hidden md:table-cell">Descricao</th>
-                    <th class="px-4 py-3 text-left">Padrao</th>
-                    <th class="px-4 py-3 text-left hidden lg:table-cell">Documentos</th>
-                    <th class="px-4 py-3 text-right">Acoes</th>
+                <tr>
+                    <th>Grupo</th>
+                    <th class="hidden md:table-cell">Descricao</th>
+                    <th>Padrao</th>
+                    <th class="hidden lg:table-cell">Documentos</th>
+                    <th>Acoes</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($grupos as $grupoDocumento)
-                    <tr class="border-b border-[var(--border-subtle)] last:border-0">
-                        <td class="px-4 py-4">
-                            <a href="{{ route('grupo-documentos.show', $grupoDocumento) }}" class="font-semibold hover:underline">
+                    <tr>
+                        <td>
+                            <a href="{{ route('grupo-documentos.show', $grupoDocumento) }}" class="resource-table__title">
                                 {{ $grupoDocumento->nome }}
                             </a>
                         </td>
-                        <td class="px-4 py-4 hidden md:table-cell">
-                            <span class="text-[var(--text-secondary)]">
+                        <td class="hidden md:table-cell">
+                            <span class="resource-table__meta">
                                 {{ $grupoDocumento->descricao ?: 'Sem descricao cadastrada.' }}
                             </span>
                         </td>
-                        <td class="px-4 py-4">
+                        <td>
                             <span class="chip chip--{{ $grupoDocumento->publico_padrao ? 'public' : 'private' }}">
                                 {{ $grupoDocumento->publico_padrao ? 'Publico' : 'Privado' }}
                             </span>
                         </td>
-                        <td class="px-4 py-4 hidden lg:table-cell">{{ $grupoDocumento->documentos_count }}</td>
-                        <td class="px-4 py-4">
-                            <div class="flex justify-end gap-2">
+                        <td class="hidden lg:table-cell"><span class="resource-table__count">{{ $grupoDocumento->documentos_count }}</span></td>
+                        <td>
+                            <div class="resource-table__actions">
                                 <a href="{{ route('grupo-documentos.show', $grupoDocumento) }}" class="button button-muted text-xs">Ver</a>
                                 @can('update', $grupoDocumento)
                                     <a href="{{ route('grupo-documentos.edit', $grupoDocumento) }}" class="button button-ghost text-xs">Editar</a>
@@ -60,11 +61,12 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-[var(--text-secondary)]">Nenhum grupo cadastrado.</td>
+                        <td colspan="5" class="resource-table__empty">Nenhum grupo cadastrado.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
+        </div>
     </div>
 
     <div class="mt-6">

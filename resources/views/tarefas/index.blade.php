@@ -6,7 +6,6 @@
                 <h1 class="section-title mt-1">Tarefas</h1>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('tarefas.export') }}" class="button button-muted">📊 Exportar Excel</a>
                 @can('create', App\Models\Tarefa::class)
                     <a href="{{ route('tarefas.create') }}" class="button button-primary">+ Nova tarefa</a>
                 @endcan
@@ -59,34 +58,37 @@
         </form>
     </div>
 
-    <div class="surface rounded-xl overflow-hidden">
-        <table class="w-full text-sm">
+    <div class="resource-table-shell">
+        <div class="resource-table-scroll">
+        <table class="resource-table">
             <thead>
-                <tr class="border-b border-[var(--border-subtle)]">
-                    <th class="px-4 py-3 text-left">Titulo</th>
-                    <th class="px-4 py-3 text-left hidden md:table-cell">Igreja</th>
-                    <th class="px-4 py-3 text-left">Status</th>
-                    <th class="px-4 py-3 text-left hidden lg:table-cell">Prioridade</th>
-                    <th class="px-4 py-3 text-right">Acoes</th>
+                <tr>
+                    <th>Titulo</th>
+                    <th class="hidden md:table-cell">Igreja</th>
+                    <th>Status</th>
+                    <th class="hidden lg:table-cell">Prioridade</th>
+                    <th>Acoes</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($tarefas as $tarefa)
-                    <tr class="border-b border-[var(--border-subtle)] last:border-0">
-                        <td class="px-4 py-4">
-                            <a href="{{ route('tarefas.show', $tarefa) }}" class="font-semibold hover:underline">{{ $tarefa->titulo }}</a>
-                            <div class="text-xs text-[var(--text-secondary)] mt-1">{{ $tarefa->user?->name ?? 'Sem responsavel' }}</div>
+                    <tr>
+                        <td>
+                            <div class="resource-table__main">
+                                <a href="{{ route('tarefas.show', $tarefa) }}" class="resource-table__title">{{ $tarefa->titulo }}</a>
+                                <div class="resource-table__meta">{{ $tarefa->user?->name ?? 'Sem responsavel' }}</div>
+                            </div>
                         </td>
-                        <td class="px-4 py-4 hidden md:table-cell">{{ $tarefa->igreja->nome_fantasia }}</td>
-                        <td class="px-4 py-4">
+                        <td class="hidden md:table-cell"><span class="resource-table__meta">{{ $tarefa->igreja->nome_fantasia }}</span></td>
+                        <td>
                             <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium" style="background-color: {{ $tarefa->status->bgColor() }}; color: {{ $tarefa->status->color() }};">
                                 <span class="w-2 h-2 rounded-full" style="background-color: {{ $tarefa->status->color() }};"></span>
                                 {{ $tarefa->status->label() }}
                             </span>
                         </td>
-                        <td class="px-4 py-4 hidden lg:table-cell">{{ $tarefa->prioridade->label() }}</td>
-                        <td class="px-4 py-4">
-                            <div class="flex justify-end gap-2">
+                        <td class="hidden lg:table-cell"><span class="resource-table__meta">{{ $tarefa->prioridade->label() }}</span></td>
+                        <td>
+                            <div class="resource-table__actions">
                                 <a href="{{ route('tarefas.show', $tarefa) }}" class="button button-muted text-xs">Ver</a>
                                 <a href="{{ route('tarefas.edit', $tarefa) }}" class="button button-ghost text-xs">Editar</a>
                             </div>
@@ -94,11 +96,12 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center text-[var(--text-secondary)]">Nenhuma tarefa encontrada.</td>
+                        <td colspan="5" class="resource-table__empty">Nenhuma tarefa encontrada.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
+        </div>
     </div>
 
     <div class="mt-6">

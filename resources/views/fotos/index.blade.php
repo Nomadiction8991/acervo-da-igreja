@@ -24,10 +24,10 @@
     @else
         <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             @foreach ($fotos as $foto)
-                <article class="surface panel-padding">
+                <article class="surface panel-padding media-card">
                     <img src="{{ route('files.fotos.show', $foto) }}" alt="{{ $foto->nome_original }}" class="w-full h-48 object-cover rounded-xl mb-4">
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="text-sm">
+                    <div class="media-card__footer">
+                        <div class="text-sm media-card__details">
                             <p class="font-semibold">{{ $foto->nome_original }}</p>
                             <p class="text-[var(--text-secondary)]">{{ $foto->is_public ? 'Publica' : 'Privada' }}</p>
                             <p class="text-[var(--text-secondary)] mt-1">
@@ -41,9 +41,9 @@
                                 @endif
                             </p>
                         </div>
-                        <div class="flex gap-2">
+                        <div class="media-card__actions">
                             @can('update', $foto)
-                                <form method="POST" action="{{ route('fotos.sync-drive', [$igreja, $foto]) }}">
+                                <form method="POST" action="{{ route('fotos.sync-drive', [$igreja, $foto]) }}" class="media-card__action-form">
                                     @csrf
                                     <button type="submit" class="button button-primary text-xs">Enviar ao Drive</button>
                                 </form>

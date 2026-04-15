@@ -15,39 +15,51 @@
         <div class="status-banner status-banner--success mb-4">{{ session('success') }}</div>
     @endif
 
-    <div class="surface rounded-xl overflow-hidden">
-        <table class="w-full text-sm">
+    <div class="resource-table-shell">
+        <div class="resource-table-scroll">
+        <table class="resource-table">
             <thead>
-                <tr class="border-b border-[var(--border-subtle)]">
-                    <th class="px-4 py-3 text-left">Nome</th>
-                    <th class="px-4 py-3 text-left hidden md:table-cell">Email</th>
-                    <th class="px-4 py-3 text-left">Status</th>
-                    <th class="px-4 py-3 text-right">Acoes</th>
+                <tr>
+                    <th>Nome</th>
+                    <th class="hidden md:table-cell">Email</th>
+                    <th>Status</th>
+                    <th>Acoes</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($users as $user)
-                    <tr class="border-b border-[var(--border-subtle)] last:border-0">
-                        <td class="px-4 py-4">
-                            <a href="{{ route('users.show', $user) }}" class="font-semibold hover:underline">{{ $user->name }}</a>
-                            <div class="text-xs text-[var(--text-secondary)] mt-1">{{ $user->is_admin ? 'Administrador' : 'Permissoes personalizadas' }}</div>
+                    <tr>
+                        <td>
+                            <div class="resource-table__main">
+                                <a href="{{ route('users.show', $user) }}" class="resource-table__title">{{ $user->name }}</a>
+                                <div class="resource-table__meta">{{ $user->is_admin ? 'Administrador' : 'Permissoes personalizadas' }}</div>
+                            </div>
                         </td>
-                        <td class="px-4 py-4 hidden md:table-cell">{{ $user->email }}</td>
-                        <td class="px-4 py-4">{{ $user->is_active ? 'Ativo' : 'Inativo' }}</td>
-                        <td class="px-4 py-4">
-                            <div class="flex justify-end gap-2">
+                        <td class="hidden md:table-cell">
+                            <span class="resource-table__meta">{{ $user->email }}</span>
+                        </td>
+                        <td>
+                            <span class="resource-table__status {{ $user->is_active ? 'resource-table__status--positive' : 'resource-table__status--muted' }}">
+                                {{ $user->is_active ? 'Ativo' : 'Inativo' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="resource-table__actions">
                                 <a href="{{ route('users.show', $user) }}" class="button button-muted text-xs">Ver</a>
-                                <a href="{{ route('users.edit', $user) }}" class="button button-ghost text-xs">Editar</a>
+                                @unless ($user->is_admin)
+                                    <a href="{{ route('users.edit', $user) }}" class="button button-ghost text-xs">Editar</a>
+                                @endunless
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-4 py-8 text-center text-[var(--text-secondary)]">Nenhum usuario encontrado.</td>
+                        <td colspan="4" class="resource-table__empty">Nenhum usuario encontrado.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
+        </div>
     </div>
 
     <div class="mt-6">

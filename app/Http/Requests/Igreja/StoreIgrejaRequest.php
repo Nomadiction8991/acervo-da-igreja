@@ -42,7 +42,7 @@ final class StoreIgrejaRequest extends FormRequest
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator): void {
-            $codigoControle = trim((string) $this->input('codigo_controle'));
+            $codigoControle = self::normalizeStringInput($this->input('codigo_controle'));
 
             if ($codigoControle === '') {
                 return;
@@ -64,5 +64,10 @@ final class StoreIgrejaRequest extends FormRequest
                     : 'Já existe uma igreja com este código de controle.'
             );
         });
+    }
+
+    private static function normalizeStringInput(mixed $value): string
+    {
+        return is_scalar($value) ? trim((string) $value) : '';
     }
 }

@@ -16,5 +16,11 @@ Route::get('/me', [AuthController::class, 'me'])->middleware('auth:web');
 
 // API V1 routes (protected)
 Route::prefix('v1')->middleware('auth:web')->group(function () {
-    Route::apiResource('igrejas', IgrejaApiController::class);
+    Route::apiResource('igrejas', IgrejaApiController::class)->names([
+        'index' => 'api.v1.igrejas.index',
+        'store' => 'api.v1.igrejas.store',
+        'show' => 'api.v1.igrejas.show',
+        'update' => 'api.v1.igrejas.update',
+        'destroy' => 'api.v1.igrejas.destroy',
+    ]);
 });

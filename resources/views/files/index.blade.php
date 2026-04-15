@@ -24,27 +24,30 @@
         </form>
     </div>
 
-    <div class="surface rounded-xl overflow-hidden">
-        <table class="w-full text-sm">
+    <div class="resource-table-shell">
+        <div class="resource-table-scroll">
+        <table class="resource-table">
             <thead>
-                <tr class="border-b border-[var(--border-subtle)]">
-                    <th class="px-4 py-3 text-left">Arquivo</th>
-                    <th class="px-4 py-3 text-left hidden md:table-cell">Igreja</th>
-                    <th class="px-4 py-3 text-left">Drive</th>
-                    <th class="px-4 py-3 text-right">Acoes</th>
+                <tr>
+                    <th>Arquivo</th>
+                    <th class="hidden md:table-cell">Igreja</th>
+                    <th>Drive</th>
+                    <th>Acoes</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($arquivos as $arquivo)
-                    <tr class="border-b border-[var(--border-subtle)] last:border-0">
-                        <td class="px-4 py-4">
-                            <div class="font-semibold">{{ $arquivo->titulo }}</div>
-                            <div class="text-xs text-[var(--text-secondary)]">{{ $arquivo->sync_error ?? $arquivo->tipo }}</div>
+                    <tr>
+                        <td>
+                            <div class="resource-table__main">
+                                <div class="resource-table__title">{{ $arquivo->titulo }}</div>
+                                <div class="resource-table__meta">{{ $arquivo->sync_error ?? $arquivo->tipo }}</div>
+                            </div>
                         </td>
-                        <td class="px-4 py-4 hidden md:table-cell">{{ $arquivo->igreja->nome_fantasia }}</td>
-                        <td class="px-4 py-4">{{ $arquivo->sync_status ?? 'sem sync' }}</td>
-                        <td class="px-4 py-4">
-                            <div class="flex justify-end gap-2">
+                        <td class="hidden md:table-cell"><span class="resource-table__meta">{{ $arquivo->igreja->nome_fantasia }}</span></td>
+                        <td><span class="resource-table__status resource-table__status--muted">{{ $arquivo->sync_status ?? 'sem sync' }}</span></td>
+                        <td>
+                            <div class="resource-table__actions">
                                 <a href="{{ route('files.documentos.show', $arquivo) }}" class="button button-muted text-xs">Baixar</a>
                                 <a href="{{ route('documentos.show', $arquivo) }}" class="button button-ghost text-xs">Detalhes</a>
                             </div>
@@ -52,11 +55,12 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-4 py-8 text-center text-[var(--text-secondary)]">Nenhum arquivo encontrado.</td>
+                        <td colspan="4" class="resource-table__empty">Nenhum arquivo encontrado.</td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
+        </div>
     </div>
 
     <div class="mt-6">

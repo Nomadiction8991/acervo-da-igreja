@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -189,26 +188,6 @@ final class Igreja extends Model
                 ->orWhere('razao_social', 'like', $term)
                 ->orWhere('cidade', 'like', $term)
                 ->orWhere('endereco', 'like', $term);
-        });
-    }
-
-    /**
-     * @return MorphToMany<Tag>
-     */
-    public function tags(): MorphToMany
-    {
-        return $this->morphToMany(Tag::class, 'taggable');
-    }
-
-    /**
-     * Filtrar por tag.
-     *
-     * @param Builder<self> $query
-     */
-    public function scopeByTag(Builder $query, string $slug): Builder
-    {
-        return $query->whereHas('tags', static function (Builder $q) use ($slug): void {
-            $q->where('slug', $slug);
         });
     }
 
